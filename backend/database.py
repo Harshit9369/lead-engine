@@ -20,7 +20,14 @@ else:
     DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lead_engine.db")
     DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH}"
 
-engine = create_async_engine(DATABASE_URL, echo=False)
+# Configure engine options
+engine_args = {}
+if DATABASE_URL.startswith("postgresql"):
+    # Fix for Supabase/PgBouncer: "prepared statement already exists"
+    # We disable the statement cache which PgBouncer doesn't support in transaction mode
+    engine_args["connect_args"] = {"statement_cache_size": 0}
+
+engine = create_async_engine(DATABASE_URL, echo=False, **engine_args)
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
