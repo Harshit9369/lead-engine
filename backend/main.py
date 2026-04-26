@@ -41,16 +41,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS — allow specific local origins for credentials support
+# CORS — allow all origins for production flexibility
+# Since we use JWT in headers (not cookies), allow_credentials=False is safer with "*"
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5174",
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False, 
     allow_methods=["*"],
     allow_headers=["*"],
 )
